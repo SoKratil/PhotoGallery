@@ -10,7 +10,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bignerdranch.android.photogallery.api.FlickrApi
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,12 +23,12 @@ class PhotoGalleryFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val flickrLiveData: LiveData<String> = FlickrFetchr().fetchPhotos()
+        val flickrLiveData: LiveData<List<GalleryItem>> = FlickrFetchr().fetchPhotos()
 
         flickrLiveData.observe(
             this,
-            Observer { responseString ->
-                Log.d(TAG, "Response received: $responseString")
+            Observer { galleryItems ->
+                Log.d(TAG, "Response received: $galleryItems")
             }
         )
 
