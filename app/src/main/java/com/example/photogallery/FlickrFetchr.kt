@@ -3,7 +3,7 @@ package com.example.photogallery
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.bignerdranch.android.photogallery.api.FlickrApi
+import com.example.photogallery.api.FlickrApi
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

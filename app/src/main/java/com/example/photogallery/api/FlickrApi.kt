@@ -1,4 +1,4 @@
-package com.bignerdranch.android.photogallery.api;
+package com.example.photogallery.api
 
 import retrofit2.Call
 import retrofit2.http.GET
