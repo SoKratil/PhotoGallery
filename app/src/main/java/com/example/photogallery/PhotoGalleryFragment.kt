@@ -90,6 +90,7 @@ class PhotoGalleryFragment : Fragment() {
     }
 
 
+
     private class PhotoHolder(itemImageView: ImageView) : RecyclerView.ViewHolder(itemImageView) {
         val bindDrawable: (Drawable) -> Unit = itemImageView::setImageDrawable
     }
