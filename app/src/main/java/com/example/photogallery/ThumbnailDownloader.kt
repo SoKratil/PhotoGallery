@@ -19,7 +19,7 @@ class ThumbnailDownloader<in T>(
     private val onThumbnailDownloaded: (T, Bitmap) -> Unit
     ) : HandlerThread(TAG), LifecycleObserver {
 
-        val fragmentLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
+    val fragmentLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
             fun setup() {
                 Log.i(TAG, "Starting background thread")
@@ -37,7 +37,7 @@ class ThumbnailDownloader<in T>(
 
     val viewLifecycleObserver: LifecycleObserver = object : LifecycleObserver {
         @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        fun clearQueue() {
+        fun tearDown() {
             Log.i(TAG, "Clearing all requests from queue")
             requestHandler.removeMessages(MESSAGE_DOWNLOAD)
             requestMap.clear()
@@ -81,7 +81,7 @@ class ThumbnailDownloader<in T>(
         requestHandler.obtainMessage(MESSAGE_DOWNLOAD, target)
             .sendToTarget()
 
-        quit()
+
 
     }
 
