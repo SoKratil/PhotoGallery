@@ -62,6 +62,7 @@ class PhotoGalleryFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_photo_gallery, container, false)
         photoRecyclerView = view.findViewById(R.id.photo_recycler_view)
         photoRecyclerView.layoutManager = GridLayoutManager(context, 3)
+
         return view
     }
 
@@ -154,6 +155,12 @@ class PhotoGalleryFragment : Fragment() {
         }
     }
 
+    private fun showPhotoDetailDialog(title: String, url: String) {
+        val dialogFragment = PhotoDetailDialogFragment()
+        dialogFragment.setPhotoDetails(title, url)
+        dialogFragment.show(childFragmentManager, "PhotoDetailDialog")
+    }
+
 
 
 
@@ -185,6 +192,12 @@ class PhotoGalleryFragment : Fragment() {
 
             holder.bindDrawable(placeholder)
             thumbnailDownloader.queueThumbnail(holder, galleryItem.url)
+            // Добавляем обработчик нажатия на изображение
+            holder.itemView.setOnClickListener {
+                // Открываем модальное окно при нажатии на изображение
+                showPhotoDetailDialog(galleryItem.title, galleryItem.url)
+            }
+
 
         }
     }
