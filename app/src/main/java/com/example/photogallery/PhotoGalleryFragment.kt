@@ -1,5 +1,6 @@
 package com.example.photogallery
 
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -8,14 +9,25 @@ import android.os.Handler
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.*
+import androidx.room.Dao
+import androidx.room.Delete
+
+import com.example.photogallery.db.PhotoDetail
+import com.example.photogallery.db.PhotoDetailDao
+import com.example.photogallery.db.PhotoGalleryDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 
@@ -28,6 +40,8 @@ class PhotoGalleryFragment : Fragment() {
     private lateinit var photoRecyclerView: RecyclerView
 
     private lateinit var thumbnailDownloader: ThumbnailDownloader<PhotoHolder>
+
+    private lateinit var photoDetailDao: PhotoDetailDao
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +60,8 @@ class PhotoGalleryFragment : Fragment() {
             }
 
         lifecycle.addObserver(thumbnailDownloader.fragmentLifecycleObserver)
+
+        photoDetailDao = PhotoGalleryDatabase.getInstance(requireContext()).photoDetailDao()
 
 
 
@@ -110,8 +126,18 @@ class PhotoGalleryFragment : Fragment() {
                     return false
                 }
             })
-            setOnSearchClickListener { searchView.setQuery(photoGalleryViewModel.searchTerm, false)
+            setOnSearchClickListener {
+                // Скрыть иконки при нажатии на поиск
+                menu.findItem(R.id.menu_item_clear).isVisible = false
+                menu.findItem(R.id.menu_item_view_database).isVisible = false
             }
+            setOnCloseListener {
+                // Показать иконки при закрытии поиска
+                menu.findItem(R.id.menu_item_clear).isVisible = true
+                menu.findItem(R.id.menu_item_view_database).isVisible = true
+                false
+            }
+
 
         }
 
@@ -149,6 +175,22 @@ class PhotoGalleryFragment : Fragment() {
                 }
                 activity?.invalidateOptionsMenu()
                 return true
+            }
+
+            R.id.menu_item_view_database -> {
+                val intent = Intent(requireContext(), DatabaseViewActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            R.id.menu_item_delete_all -> {
+                // Логика для удаления всех записей из базы данных
+                lifecycleScope.launch(Dispatchers.IO) {
+                    photoDetailDao.deleteAllPhoto()
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(requireContext(), "Все записи успешно удалены", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                true
             }
 
             else -> super.onOptionsItemSelected(item)
